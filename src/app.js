@@ -49,8 +49,11 @@
         return new Promise((resolve, reject)=>{
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url);
-            xhr.onreadystatechange = ()=>{
-                if(xhr.readyState === 4) resolve(xhr.responseText);
+            xhr.onload = ()=>{
+                if(xhr.status === 200) resolve(xhr.responseText);
+            };
+            xhr.onerror = ()=>{
+               reject(xhr.statusText);
             };
             xhr.send();
         })
