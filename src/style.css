@@ -22,7 +22,7 @@
 }
 body{background: #222; color: #fff; font-family: 'Open Sans';}
 div{box-sizing: border-box}
-.dashboard{float: left; width:100%; display: flex;}
+.dashboard{float: left; width:100%; display: flex; padding-top: 30px;}
 .two-col{float: left; width:50%; padding:5px;}
 .widget{margin-bottom: 10px;     float: left;
     width: 100%; min-width: 300px;}
@@ -41,4 +41,7 @@ div{box-sizing: border-box}
     font-size: 12px;
     background: #222;}
 .widget .widget-actions div:hover{background: #444;}
-#col{width: 200px; height:300px; float:right; background: #444;}
+.actions-bar{    position: absolute;
+    top: 10px;
+    left: 10px;}
+.dashboard-col{}

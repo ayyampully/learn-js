@@ -14,9 +14,9 @@
     myClass.prop = 123;
     console.log(myClass.prop)*/
     
-    function getDashboardView(id){
+    function createDiv(id, className){
         var div = document.createElement('div');
-        div.setAttribute('class', 'dashboard');
+        div.setAttribute('class', className);
         div.setAttribute('id', id);
         return div;
     }
@@ -35,39 +35,30 @@
         div.innerHTML = temp;
         return div;
     }
+    function createButton(name, action){
+        var btn = document.createElement('button');
+        //button.name = name;
+        btn.innerHTML = name;
+        //btn.id = name;
+        return btn;
+    }
     
 class Layout{
     constructor(name, options = {}){
         this.name = name;
-        this.elm = getDashboardView(name);
+        this.elm = createDiv(name, 'dashboard');
         this.options = options;
         this.layout = 'two-col';
         this.cols = [];
+        this.createActions();
     }
-}
-class Widget{
-    constructor(name, options = {}){
-        this.name = name;
-        this.elm = getWidgetView(name);
-        this.options = options;
-    }
-    init(cols){
-        this.cols = cols || [];
-        this.setWidgets();
-        this.elm.setAttribute('draggable', true);
-        this.elm.addEventListener('dragstart', this.onDrag.bind(this))
-        //this.elm.addEventListener('dragend', this.onDrag.bind(this))
-    }
-    setWidgets(){
-       let widgets = 1;
-       for(let i = 0; i<widgets; i++){
-           this.cols[i%2].appendChild(this.elm)
-       }
-    }
-    onDrag(e){
-        e.dataTransfer.setData("text/plain", e.target.id);
-        e.effectAllowed = "copyMove";
-        console.log(e)
+    createActions(){
+        this.actionsBar = createDiv('actions-bar', 'actions-bar');
+        this.elm.appendChild(this.actionsBar);
+        var addBtn = createButton('Add a widget');
+        this.layoutChange = createButton('Three col');
+        this.actionsBar.appendChild(addBtn);
+        this.actionsBar.appendChild(this.layoutChange);
     }
 }
 
@@ -81,12 +72,11 @@ class MultiWindow extends Layout{
         console.log('MultiWindow')
         document.getElementById('container').appendChild(this.elm);
         this.setColumns();
+        this.layoutChange.addEventListener('click', this.setColumns.bind(this, 3))
         for(let col of this.cols){
             col.addEventListener('dragover', this.onDragover.bind(this))
             col.addEventListener('drop', this.onDrop.bind(this))
         }
-       // this.col.addEventListener('dragover', this.onDragover.bind(this))
-       // this.col.addEventListener('drop', this.onDrop.bind(this))
     }
     setColumns(){
        let col = 2;
@@ -105,19 +95,53 @@ class MultiWindow extends Layout{
     
     onDragover(ev){
         ev.preventDefault();
-        // Set the dropEffect to move
         ev.dataTransfer.dropEffect = "move"
     }
     onDrop(ev){
         ev.preventDefault();
-         // Get the id of the target and add the moved element to the target's DOM
          var data = ev.dataTransfer.getData("text");
-         ev.target.appendChild(document.getElementById(data));
+         ev.currentTarget.appendChild(document.getElementById(data));
     }
 }
+
+var widgetCount = 0;
+class Widget{
+    constructor(name, options = {}){
+        this.name = name;
+        this.elm = getWidgetView(name);
+        this.options = options;
+        
+    }
+    init(cols){
+        this.cols = cols || [];
+        this.setWidgets();
+        this.elm.setAttribute('draggable', true);
+        this.elm.addEventListener('dragstart', this.onDrag.bind(this))
+        this.elm.addEventListener('drop', (ev)=>{ev.preventDefault();})
+        //this.elm.addEventListener('dragend', this.onDrag.bind(this))
+    }
+    setWidgets(){
+       //let widgetIndex = 3;
+       //for(let i = 0; i<widgets; i++){
+           this.cols[widgetCount%2].appendChild(this.elm)
+           widgetCount++
+      // }
+    }
+    onDrag(e){
+        e.dataTransfer.setData("text/plain", e.target.id);
+        e.effectAllowed = "copyMove";
+    }
+}
+
 const multiWindow = new MultiWindow('d1');
 const widget = new Widget('w1');
 widget.init(multiWindow.dashboardCol)
+
+const widget2 = new Widget('w2');
+widget2.init(multiWindow.dashboardCol)
+
+const widget3 = new Widget('w3');
+widget3.init(multiWindow.dashboardCol)
 
     
     /*net('/rest2')
